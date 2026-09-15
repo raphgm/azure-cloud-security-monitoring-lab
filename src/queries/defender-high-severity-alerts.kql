@@ -1,0 +1,6 @@
+// High-severity Microsoft Defender for Cloud alerts from the last 7 days.
+SecurityAlert
+| where TimeGenerated > ago(7d)
+| where AlertSeverity == "High"
+| project TimeGenerated, AlertName, CompromisedEntity, Description
+| order by TimeGenerated desc

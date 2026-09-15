@@ -1,0 +1,9 @@
+// Surfaces source IPs racking up denied attempts against Azure Firewall —
+// a spike against many destination ports in a short window is a scanning
+// pattern worth investigating.
+AzureDiagnostics
+| where Category == "AzureFirewallNetworkRule"
+| where msg_s contains "Deny"
+| parse msg_s with * "from " SourceIP " to " DestinationIP ":" DestinationPort " " *
+| summarize DeniedAttempts = count() by SourceIP, DestinationIP, DestinationPort
+| order by DeniedAttempts desc
