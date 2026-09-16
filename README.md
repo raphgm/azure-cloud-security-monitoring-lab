@@ -6,7 +6,7 @@ Companion lab for the article [Cloud Security and Monitoring in Azure](https://r
 
 ---
 
-## 🎯 How the Pieces Connect
+## How the Pieces Connect
 
 ```mermaid
 flowchart LR
@@ -18,7 +18,7 @@ flowchart LR
 
 ---
 
-## 📚 Repository Structure
+## Repository Structure
 
 ```text
 .
@@ -40,7 +40,7 @@ flowchart LR
 
 ---
 
-## 🛠️ Quick Start
+## Quick Start
 
 ### 1. Deploy the core infrastructure (Bicep)
 
