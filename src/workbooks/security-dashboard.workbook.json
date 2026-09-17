@@ -1,0 +1,67 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## Security Dashboard\nSecure Score trend, high-severity Defender alerts, Key Vault access anomalies, and Azure Firewall deny-rate — the four panels from Section 4.6 of the companion article."
+      },
+      "name": "text - title"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "SecureScores\n| where TimeGenerated > ago(30d)\n| summarize AvgPercentageScore = avg(PercentageScore) by bin(TimeGenerated, 1d)\n| order by TimeGenerated asc",
+        "size": 0,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "linechart",
+        "title": "Secure Score trend (30 days)"
+      },
+      "name": "query - secure score trend",
+      "conditionalVisibilities": []
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "SecurityAlert\n| where TimeGenerated > ago(7d)\n| where AlertSeverity == \"High\"\n| project TimeGenerated, AlertName, CompromisedEntity, Description\n| order by TimeGenerated desc",
+        "size": 0,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table",
+        "title": "High-severity Defender alerts (7 days)"
+      },
+      "name": "query - defender high severity alerts"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AzureDiagnostics\n| where ResourceProvider == \"MICROSOFT.KEYVAULT\"\n| where OperationName == \"SecretGet\"\n| project TimeGenerated, CallerIPAddress, identity_claim_upn_s, requestUri_s, ResultSignature\n| order by TimeGenerated desc",
+        "size": 0,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "table",
+        "title": "Key Vault secret access audit"
+      },
+      "name": "query - keyvault secret access audit"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "AzureDiagnostics\n| where Category == \"AzureFirewallNetworkRule\"\n| where msg_s contains \"Deny\"\n| parse msg_s with * \"from \" SourceIP \" to \" DestinationIP \":\" DestinationPort \" \" *\n| summarize DeniedAttempts = count() by bin(TimeGenerated, 1h)\n| order by TimeGenerated asc",
+        "size": 0,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "linechart",
+        "title": "Firewall deny-rate (hourly)"
+      },
+      "name": "query - firewall deny rate"
+    }
+  ],
+  "fallbackResourceIds": [],
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}

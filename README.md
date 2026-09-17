@@ -32,10 +32,12 @@ flowchart LR
     ├── scripts/
     │   ├── enable-defender.sh      # Enable Defender plans per workload type
     │   └── connect-diagnostics.sh  # Wire Key Vault + Firewall logs to the workspace
-    └── queries/
-        ├── defender-high-severity-alerts.kql
-        ├── keyvault-secret-access-audit.kql
-        └── firewall-denied-traffic.kql
+    ├── queries/
+    │   ├── defender-high-severity-alerts.kql
+    │   ├── keyvault-secret-access-audit.kql
+    │   └── firewall-denied-traffic.kql
+    └── workbooks/
+        └── security-dashboard.workbook.json   # All four panels below, ready to import
 ```
 
 ---
@@ -78,6 +80,12 @@ az monitor log-analytics query \
   --workspace "<workspace-id>" \
   --analytics-query "$(cat src/queries/firewall-denied-traffic.kql)"
 ```
+
+### 5. Import the Workbook (all four panels, no manual panel-building)
+
+`src/workbooks/security-dashboard.workbook.json` combines the three queries above with a Secure Score trend panel. In the Azure Portal: **Monitor > Workbooks > New > Advanced Editor**, paste the file's contents, then point it at your Log Analytics workspace.
+
+One panel needs a prerequisite this repo doesn't automate yet: the Secure Score trend query reads from the `SecureScores` table, which only populates if **Continuous Export** is enabled from Defender for Cloud to this workspace (Defender for Cloud > Environment settings > Continuous export > Secure score). Without that export configured, the other three panels (Defender alerts, Key Vault audit, Firewall deny-rate) still work — only the Secure Score panel will show no data.
 
 ---
 
